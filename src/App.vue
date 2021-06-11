@@ -1,30 +1,24 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
-  <router-view />
+  <component :is="pageLayout" v-if="pageLayout"/>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script lang="ts">
+import {getPageLayout} from '@/hooks/router'
+import AppLayout from '@/layouts/AppLayout.vue'
+import AuthLayout from '@/layouts/AuthLayout.vue'
+import {defineComponent} from 'vue'
 
-#nav {
-  padding: 30px;
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+export default defineComponent({
+  setup() {
 
-    &.router-link-exact-active {
-      color: #42b983;
+    return {
+      pageLayout: getPageLayout()
     }
+  },
+  components: {
+    AppLayout,
+    AuthLayout
   }
-}
-</style>
+})
+</script>

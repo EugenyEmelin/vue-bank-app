@@ -1,26 +1,53 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import Home from "../views/Home.vue";
+import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router"
+import HomePage from "@/views/HomeView.vue"
+import store from '@/store'
+import names from '@/utils/entities.names'
+import {authRoute} from '@/router/modules/auth.route'
+import {ordersRoute} from '@/router/modules/orders.route'
+import {AppRoute} from "@/Types/router";
 
-const routes: Array<RouteRecordRaw> = [
+const routes: AppRoute[] = [
   {
-    path: "/",
-    name: "Home",
-    component: Home,
+    path: '/',
+    name: 'Home',
+    component: HomePage,
+    meta: {
+      layout: 'app-layout',
+      showInSidebar: true,
+      icon: 'home-icon',
+      auth: true
+    }
   },
   {
-    path: "/about",
-    name: "About",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue"),
+    path: '/help',
+    name: 'Help',
+    component: () => import('@/views/HelpView.vue'),
+    meta: {
+      layout: 'app-layout',
+      auth: true
+    }
   },
-];
+  // Include other routes
+  ...authRoute,
+  ...ordersRoute
+]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
-});
+  linkActiveClass: 'active',
+  linkExactActiveClass: 'active'
+})
 
-export default router;
+router.beforeEach((to, from, next) => {
+  const requireAuth = to.meta.auth
+  const isAuthenticated = store.getters['auth/isAuthenticated']
+
+  if (requireAuth && !isAuthenticated) {
+    next(`/auth?message=${names.NO_AUTH_CODE}`)
+  } else {
+    next()
+  }
+})
+
+export default router

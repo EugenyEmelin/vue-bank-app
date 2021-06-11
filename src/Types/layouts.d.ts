@@ -1,0 +1,1 @@
+declare type LayoutName = 'app-layout' | 'auth-layout'
